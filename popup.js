@@ -3,31 +3,35 @@ document.addEventListener("DOMContentLoaded", () => {
   const addWordBtn = document.getElementById("addWordBtn");
   const newWordInput = document.getElementById("newWord");
   const blacklistContainer = document.getElementById("blacklist");
-  const status = document.getElementById("status");
-  const blockedCountElement = document.getElementById("blockedCount"); // Éléments pour le compte de mots bloqués
+  const blockedCountElement = document.getElementById("blockedCount");
+
+  // Mettre à jour le compteur de mots bloqués
+  function updateBlockedCount() {
+    chrome.storage.local.get("blockedCount", (data) => {
+      blockedCountElement.textContent = data.blockedCount || 0;
+    });
+  }
 
   // Charger les paramètres de stockage de Chrome (état du switch et mots blacklistés)
   chrome.storage.sync.get(["isBlockingEnabled", "blacklist"], (data) => {
     toggleSwitch.checked = data.isBlockingEnabled || false;
     const blacklist = data.blacklist || [];
     blacklist.forEach((word) => addWordToList(word));
-
-    // Compter les mots bloqués sur la page actuelle
-    countBlockedWords(blacklist);
+    updateBlockedCount();
   });
 
   // Activer/Désactiver le blocage
   toggleSwitch.addEventListener("change", () => {
     const isBlockingEnabled = toggleSwitch.checked;
-    chrome.storage.sync.set({ isBlockingEnabled });
-    status.textContent = isBlockingEnabled
-      ? "Blocage activé"
-      : "Blocage désactivé";
+    chrome.storage.sync.set({ isBlockingEnabled }, () => {
+      if (!isBlockingEnabled) {
+        chrome.storage.local.set({ blockedCount: 0 });
 
-    // Mettre à jour le compte des mots bloqués après avoir changé l'état
-    chrome.storage.sync.get("blacklist", (data) => {
-      const blacklist = data.blacklist || [];
-      countBlockedWords(blacklist);
+        // Reload the active tab
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          chrome.tabs.reload(tabs[0].id);
+        });
+      }
     });
   });
 
@@ -38,15 +42,12 @@ document.addEventListener("DOMContentLoaded", () => {
       chrome.storage.sync.get("blacklist", (data) => {
         const blacklist = data.blacklist || [];
         if (!blacklist.includes(word)) {
-          blacklist.push(word); // Éviter les doublons
+          blacklist.push(word);
           chrome.storage.sync.set({ blacklist }, () => {
             addWordToList(word);
-            newWordInput.value = "";
-
-            // Mettre à jour le compte des mots bloqués
-            countBlockedWords(blacklist);
           });
         }
+        newWordInput.value = "";
       });
     }
   });
@@ -57,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     li.textContent = word;
 
     const removeBtn = document.createElement("button");
-    removeBtn.textContent = "❌"; // Croissant rouge
+    removeBtn.textContent = "❌";
     removeBtn.style.marginLeft = "10px";
     removeBtn.style.color = "red";
     removeBtn.style.border = "none";
@@ -68,17 +69,14 @@ document.addEventListener("DOMContentLoaded", () => {
     removeBtn.addEventListener("click", () => {
       chrome.storage.sync.get("blacklist", (data) => {
         let blacklist = data.blacklist || [];
-        blacklist = blacklist.filter((item) => item !== word); // Supprimer le mot
+        blacklist = blacklist.filter((item) => item !== word);
         chrome.storage.sync.set({ blacklist }, () => {
-          li.remove(); // Retirer l'élément de la liste affichée
+          li.remove();
 
           // Reload the active tab
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             chrome.tabs.reload(tabs[0].id);
           });
-
-          // Mettre à jour le compte des mots bloqués
-          countBlockedWords(blacklist);
         });
       });
     });
@@ -87,41 +85,12 @@ document.addEventListener("DOMContentLoaded", () => {
     blacklistContainer.appendChild(li);
   }
 
-  // Compter les mots bloqués sur la page actuelle
-  function countBlockedWords(blacklist) {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.scripting.executeScript(
-        {
-          target: { tabId: tabs[0].id },
-          func: (blacklist) => {
-            let count = 0;
-            const walker = document.createTreeWalker(
-              document.body,
-              NodeFilter.SHOW_TEXT,
-              null,
-              false
-            );
-            let node;
-            while ((node = walker.nextNode())) {
-              let text = node.nodeValue;
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "blockedCountUpdated") {
+      blockedCountElement.textContent = request.count;
+    }
+  });
 
-              // Compter les mots bloqués
-              blacklist.forEach((word) => {
-                const regex = new RegExp(`\\b${word}\\b`, "gi"); // Le `\\b` assure que ce soit un mot entier
-                if (regex.test(text)) {
-                  count += (text.match(regex) || []).length; // Compter les occurrences
-                }
-              });
-            }
-            return count; // Retourne le nombre total de mots bloqués
-          },
-          args: [blacklist],
-        },
-        (results) => {
-          const blockedCount = results[0].result; // Récupère le nombre de mots bloqués
-          blockedCountElement.textContent = blockedCount; // Met à jour l'affichage
-        }
-      );
-    });
-  }
+  // Mettre à jour le compteur toutes les 2 secondes
+  setInterval(updateBlockedCount, 2000);
 });
