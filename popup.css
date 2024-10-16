@@ -1,10 +1,13 @@
 body {
   font-family: Arial, sans-serif;
   width: 250px;
+  background-color: #e8f5e9;
 }
+
 #status {
   margin: 10px 0;
 }
+
 #toggleSwitch {
   position: relative;
   width: 40px;
@@ -50,6 +53,7 @@ body {
 #addWordBtn:hover {
   background-color: #45a049;
 }
+
 #newWord {
   width: calc(100% - 22px);
   padding: 5px;
@@ -58,9 +62,14 @@ body {
   border-radius: 5px;
   box-sizing: border-box;
 }
+
 #blacklist {
   list-style-type: none;
   padding: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  /* border: 1px solid #ccc; */
+  margin-top: 10px;
 }
 
 #blacklist li {

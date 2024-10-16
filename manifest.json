@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "SpamBlock",
   "version": "1.0",
-  "description": "Supprime les posts avec des mots blacklistés et avertit des risques.",
+  "description": "Supprime les posts avec des mots blacklistés sur Twitter et remplace les mots injurieux par des cœurs sur les autres sites.",
   "permissions": ["storage", "activeTab", "scripting"],
   "background": {
     "service_worker": "background.js"
@@ -10,10 +10,10 @@
   "action": {
     "default_popup": "popup.html"
   },
-  "host_permissions": ["https://x.com/*"],
+  "host_permissions": ["https://*/*"],
   "content_scripts": [
     {
-      "matches": ["https://x.com/*"],
+      "matches": ["https://*/*"],
       "js": ["content.js"]
     }
   ]

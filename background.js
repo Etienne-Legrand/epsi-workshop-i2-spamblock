@@ -1,6 +1,6 @@
 chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.set({
     isBlockingEnabled: true,
-    blacklist: ["photo", "clio"],
+    blacklist: [], // Liste personnalisée de l'utilisateur
   });
 });
