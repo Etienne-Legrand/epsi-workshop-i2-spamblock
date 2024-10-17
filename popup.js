@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Mettre à jour le compteur de mots bloqués
   function updateBlockedCount() {
-    chrome.storage.local.get("blockedCount", (data) => {
+    chrome.storage.sync.get("blockedCount", (data) => {
       blockedCountElement.textContent = data.blockedCount || 0;
     });
   }
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const isBlockingEnabled = toggleSwitch.checked;
     chrome.storage.sync.set({ isBlockingEnabled }, () => {
       if (!isBlockingEnabled) {
-        chrome.storage.local.set({ blockedCount: 0 });
+        chrome.storage.sync.set({ blockedCount: 0 });
 
         // Reload the active tab
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {

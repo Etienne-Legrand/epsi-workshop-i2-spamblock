@@ -139,11 +139,11 @@ function updateBlockedCount(blacklist, isTwitter) {
 
   // Vérifier si l'extension est toujours active
   try {
-    chrome.storage.local.get("blockedCount", (data) => {
+    chrome.storage.sync.get("blockedCount", (data) => {
       const currentBlockedCount = data.blockedCount || 0;
       const updatedBlockedCount = currentBlockedCount + newBlockedCount;
 
-      chrome.storage.local.set({ blockedCount: updatedBlockedCount }, () => {
+      chrome.storage.sync.set({ blockedCount: updatedBlockedCount }, () => {
         // S'assurer que le contexte est valide avant d'envoyer le message
         if (chrome.runtime?.lastError) {
           console.error("Runtime error: ", chrome.runtime.lastError);
@@ -161,6 +161,7 @@ function updateBlockedCount(blacklist, isTwitter) {
   }
 }
 
+// Initialiser le bloqueur de spam
 function initializeBlocker(isBlockingEnabled, blacklist) {
   const isTwitter = window.location.hostname.includes("x.com");
 
@@ -171,7 +172,7 @@ function initializeBlocker(isBlockingEnabled, blacklist) {
     if (observer) {
       observer.disconnect();
     }
-    chrome.storage.local.set({ blockedCount: 0 });
+    chrome.storage.sync.set({ blockedCount: 0 });
   }
 }
 
@@ -183,6 +184,7 @@ chrome.storage.sync.get(["isBlockingEnabled", "blacklist"], (data) => {
   initializeBlocker(isBlockingEnabled, blacklist);
 });
 
+// Mettre à jour le bloqueur de spam lorsque les paramètres changent
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "sync" && (changes.isBlockingEnabled || changes.blacklist)) {
     chrome.storage.sync.get(["isBlockingEnabled", "blacklist"], (data) => {
@@ -194,11 +196,12 @@ chrome.storage.onChanged.addListener((changes, area) => {
   }
 });
 
+// Écouter les messages pour mettre à jour le compteur de mots bloqués
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getBlockedCount") {
-    chrome.storage.local.get("blockedCount", (data) => {
+    chrome.storage.sync.get("blockedCount", (data) => {
       sendResponse({ count: data.blockedCount || 0 });
     });
-    return true; // Indicates that the response is asynchronous
+    return true;
   }
 });

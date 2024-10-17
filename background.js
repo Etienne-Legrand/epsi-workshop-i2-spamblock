@@ -14,13 +14,19 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.sync.set({
     isBlockingEnabled: true,
     blacklist: [],
-  });
-  chrome.storage.local.set({
     blockedCount: 0,
   });
 
   // Initialiser le badge à ON par défaut
   updateBadge(true);
+});
+
+// Met à jour le badge lorsque le navigateur est redémarré
+chrome.runtime.onStartup.addListener(() => {
+  chrome.storage.sync.get("isBlockingEnabled", (data) => {
+    const isBlockingEnabled = data.isBlockingEnabled || false;
+    updateBadge(isBlockingEnabled);
+  });
 });
 
 // Met à jour le badge lorsque l'état change
