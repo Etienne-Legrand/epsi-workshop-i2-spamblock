@@ -71,14 +71,28 @@ function filterTweets(blacklist) {
   return localBlockedCount;
 }
 
-// Fonction pour remplacer les mots sur les autres sites
+// Fonction pour remplacer les mots sur les autres sites, en ignorant les champs d'entrée
 function replaceWords(blacklist) {
   const walker = document.createTreeWalker(
     document.body,
     NodeFilter.SHOW_TEXT,
-    null,
+    {
+      acceptNode(node) {
+        // Ignorer les nœuds texte à l'intérieur des champs de saisie
+        if (
+          node.parentNode &&
+          (node.parentNode.nodeName === "INPUT" ||
+            node.parentNode.nodeName === "TEXTAREA" ||
+            node.parentNode.isContentEditable)
+        ) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    },
     false
   );
+
   let localBlockedCount = 0;
   let node;
 
