@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const toggleSwitch = document.getElementById("toggleSwitch");
-  const addWordBtn = document.getElementById("addWordBtn");
-  const newWordInput = document.getElementById("newWord");
-  const blacklistContainer = document.getElementById("blacklist");
-  const blockedCountElement = document.getElementById("blockedCount");
+  const toggleSwitch = document.getElementById("toggle-switch");
+  const addWordBtn = document.getElementById("add-word-btn");
+  const newWordInput = document.getElementById("new-word");
+  const blacklistElement = document.getElementById("blacklist");
+  const blockedCountElement = document.getElementById("blocked-count");
 
   // Mettre à jour le compteur de mots bloqués
   function updateBlockedCount() {
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     li.appendChild(removeBtn);
-    document.getElementById("blacklist").appendChild(li);
+    blacklistElement.appendChild(li);
   }
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
