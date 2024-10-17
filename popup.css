@@ -1,9 +1,9 @@
 :root {
-  --primary-color: #4CAF50;
+  --primary-color: #4caf50;
   --secondary-color: #abd8af;
   --text-color: #333333;
   --background-color: #f4f9f4;
-  --border-color: #4CAF50;
+  --border-color: #4caf50;
   --li-hover-color: #d8ebda;
   --button-text-color: #f4f9f4;
   --button-hover-color: #45a049;
@@ -14,7 +14,7 @@
 
 /* Global styles */
 body {
-  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Poppins", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
   margin: 0;
@@ -67,7 +67,7 @@ body {
   right: 0;
   bottom: 0;
   background-color: var(--secondary-color);
-  transition: .4s;
+  transition: 0.4s;
 }
 
 .slider:before {
@@ -78,7 +78,7 @@ body {
   left: 4px;
   bottom: 4px;
   background-color: var(--button-text-color);
-  transition: .4s;
+  transition: 0.4s;
 }
 
 input:checked + .slider {
@@ -162,8 +162,8 @@ input:checked + .slider:before {
 
 @supports (scrollbar-width: auto) {
   #blacklist {
-      scrollbar-width: auto;
-      scrollbar-color: var(--primary-color) var(--background-color);
+    scrollbar-width: auto;
+    scrollbar-color: var(--primary-color) var(--background-color);
   }
 }
 
