@@ -58,12 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
     li.textContent = word;
 
     const removeBtn = document.createElement("button");
-    removeBtn.textContent = "❌";
-    removeBtn.style.marginLeft = "10px";
-    removeBtn.style.color = "red";
-    removeBtn.style.border = "none";
-    removeBtn.style.background = "transparent";
-    removeBtn.style.cursor = "pointer";
+    removeBtn.innerHTML = "&#10006;"; // Code HTML pour une croix plus élégante
+    removeBtn.className = "remove-btn";
 
     // Quand on clique sur la croix, on supprime le mot de la blacklist
     removeBtn.addEventListener("click", () => {
@@ -82,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     li.appendChild(removeBtn);
-    blacklistContainer.appendChild(li);
+    document.getElementById("blacklist").appendChild(li);
   }
 
   chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {

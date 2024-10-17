@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -8,18 +8,34 @@
     <link rel="stylesheet" href="./popup.css" />
   </head>
   <body>
-    <h2>SpamBlock</h2>
-    <label for="toggleSwitch">Activer le blocage</label>
-    <input type="checkbox" id="toggleSwitch" />
-
-    <h3>Nombre de mots bloqués au total : <span id="blockedCount">0</span></h3>
-
-    <h3>Ajouter des mots à la blacklist</h3>
-    <input type="text" id="newWord" placeholder="Ajouter un mot" />
-    <button id="addWordBtn">Ajouter</button>
-
-    <ul id="blacklist"></ul>
-
+    <div class="container">
+      <h1 class="title">SpamBlock</h1>
+      <div class="toggle-container">
+        <label for="toggleSwitch" class="switch-label"
+          >Activer le blocage</label
+        >
+        <label for="toggleSwitch" class="switch">
+          <input type="checkbox" id="toggleSwitch" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="stats-container">
+        <p class="stats-text">
+          Mots bloqués au total : <span id="blockedCount">0</span>
+        </p>
+      </div>
+      <div class="input-container">
+        <input
+          type="text"
+          id="newWord"
+          placeholder="Ajouter un mot à bloquer"
+        />
+        <button id="addWordBtn">Ajouter</button>
+      </div>
+      <div class="blacklist-container">
+        <ul id="blacklist"></ul>
+      </div>
+    </div>
     <script src="./popup.js" type="module"></script>
   </body>
 </html>
