@@ -84,14 +84,18 @@ function replaceWords(blacklist) {
 
   while ((node = walker.nextNode())) {
     let text = node.nodeValue;
+
     blacklist.forEach((word) => {
-      const regex = new RegExp(`\\b${word}\\b`, "gi");
-      const matches = text.match(regex);
-      if (matches) {
-        localBlockedCount += matches.length;
-      }
-      node.nodeValue = text.replace(regex, "❤️");
+      const regex = new RegExp(`(\\b|\\s)(${word})(?=\\s|\\b)`, "gi");
+
+      // Remplacer uniquement le groupe 2 (le mot en lui-même)
+      text = text.replace(regex, (match, p1, p2) => {
+        localBlockedCount++;
+        return p1 + "♥".repeat(p2.length);
+      });
     });
+
+    node.nodeValue = text;
   }
 
   return localBlockedCount;
@@ -119,16 +123,28 @@ function updateBlockedCount(blacklist, isTwitter) {
     ? filterTweets(blacklist)
     : replaceWords(blacklist);
 
-  chrome.storage.local.get("blockedCount", (data) => {
-    const currentBlockedCount = data.blockedCount || 0;
-    const updatedBlockedCount = currentBlockedCount + newBlockedCount;
-    chrome.storage.local.set({ blockedCount: updatedBlockedCount }, () => {
-      chrome.runtime.sendMessage({
-        action: "updateBlockedCount",
-        count: updatedBlockedCount,
+  // Vérifier si l'extension est toujours active
+  try {
+    chrome.storage.local.get("blockedCount", (data) => {
+      const currentBlockedCount = data.blockedCount || 0;
+      const updatedBlockedCount = currentBlockedCount + newBlockedCount;
+
+      chrome.storage.local.set({ blockedCount: updatedBlockedCount }, () => {
+        // S'assurer que le contexte est valide avant d'envoyer le message
+        if (chrome.runtime?.lastError) {
+          console.error("Runtime error: ", chrome.runtime.lastError);
+          return;
+        }
+
+        chrome.runtime.sendMessage({
+          action: "updateBlockedCount",
+          count: updatedBlockedCount,
+        });
       });
     });
-  });
+  } catch (e) {
+    console.error("Extension context invalidated or another error:", e);
+  }
 }
 
 function initializeBlocker(isBlockingEnabled, blacklist) {
