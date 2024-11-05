@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "SpamBlock",
+  "name": "__MSG_appName__",
   "version": "1.0",
-  "description": "Supprime les posts avec des mots blacklistés sur Twitter et remplace les mots injurieux par des cœurs sur les autres sites.",
+  "description": "__MSG_appDescription__",
+  "default_locale": "en",
   "permissions": ["storage", "activeTab", "scripting"],
   "background": {
     "service_worker": "background.js"

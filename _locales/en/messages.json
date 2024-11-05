@@ -1,0 +1,8 @@
+{
+  "appName": {
+    "message": "SpamBlock"
+  },
+  "appDescription": {
+    "message": "Removes posts containing offensive words on X and replaces offensive words with hearts on other sites."
+  }
+}
